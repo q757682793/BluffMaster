@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>在线卡牌游戏</title>
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+    <!-- 游戏大厅 -->
+    <div id="game-lobby" class="screen">
+        <h1>在线卡牌游戏</h1>
+        <div class="player-list">
+            <h2>玩家列表</h2>
+            <div id="players"></div>
+        </div>
+        <div class="controls">
+            <input type="text" id="player-name" placeholder="输入玩家名称">
+            <select id="game-mode">
+                <option value="single">单机模式</option>
+                <option value="multi">多人模式</option>
+            </select>
+            <select id="ai-level">
+                <option value="easy">简单</option>
+                <option value="medium">中等</option>
+                <option value="hard">困难</option>
+            </select>
+            <button id="start-btn">开始游戏</button>
+        </div>
+    </div>
+
+    <!-- 游戏界面 -->
+    <div id="game-table" class="screen">
+        <div class="game-container">
+            <!-- 玩家区域 -->
+            <div class="player-areas">
+                <div id="player1" class="player-area bottom">
+                    <div class="player-info">
+                        <span class="player-name"></span>
+                        <span class="bullet-count"></span>
+                    </div>
+                    <div class="hand"></div>
+                </div>
+                <div id="player2" class="player-area top">
+                    <div class="player-info">
+                        <span class="player-name"></span>
+                        <span class="bullet-count"></span>
+                    </div>
+                    <div class="hand"></div>
+                </div>
+            </div>
+
+            <!-- 中央区域 -->
+            <div class="center-area">
+                <div class="game-info">
+                    <div>目标牌: <span id="target-card"></span></div>
+                    <div>当前玩家: <span id="current-player"></span></div>
+                    <div>剩余时间: <span id="turn-timer">15</span>秒</div>
+                </div>
+                <div id="played-cards"></div>
+                <div class="action-buttons">
+                    <button id="play-btn" class="action-btn">出牌</button>
+                    <button id="challenge-btn" class="action-btn">质疑</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 轮盘赌动画 -->
+    <div id="roulette-animation" class="hidden">
+        <div class="revolver">
+            <div class="cylinder"></div>
+        </div>
+        <div class="result"></div>
+    </div>
+
+    <script src="game.js"></script>
+    <script src="ui.js"></script>
+</body>
+</html> 
