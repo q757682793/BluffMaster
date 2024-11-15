@@ -49,13 +49,13 @@ class UIController {
         this.playerNameInput = document.getElementById('player-name');
         this.startButton = document.getElementById('start-btn');
         this.playersList = document.getElementById('players');
-        
+
         // 初始状态隐藏游戏界面
         this.gameScreen.style.display = 'none';
-        
+
         // 绑定事件
         this.bindEvents();
-        
+
         // 设置初始状态
         this.setupInitialState();
     }
@@ -63,11 +63,11 @@ class UIController {
     setupInitialState() {
         const modeSelect = document.getElementById('game-mode');
         const aiLevel = document.getElementById('ai-level');
-        
+
         modeSelect.addEventListener('change', () => {
             const isSingleMode = modeSelect.value === 'single';
             aiLevel.style.display = isSingleMode ? 'inline-block' : 'none';
-            
+
             if (isSingleMode) {
                 this.playersList.innerHTML = `
                     <div>玩家1: 等待开始</div>
@@ -99,15 +99,15 @@ class UIController {
     updateGameView() {
         const gameState = this.game.getGameState();
         if (!gameState) return;
-        
+
         // 显示游戏界面
         this.gameScreen.style.display = 'block';
         this.lobbyScreen.style.display = 'none';
-        
+
         // 更新游戏信息
         document.getElementById('target-card').textContent = gameState.targetCard || '未指定';
         document.getElementById('current-player').textContent = gameState.players[gameState.currentPlayer]?.name || '未知';
-        
+
         // 更新玩家信息和手牌
         gameState.players.forEach((player, index) => {
             const playerArea = document.getElementById(`player${index + 1}`);
@@ -119,9 +119,9 @@ class UIController {
 
             nameElement.textContent = `${player.name} ${player.alive ? '' : '(已出局)'}`;
             bulletElement.textContent = `剩余: ${player.bulletCount}发`;
-            
+
             handElement.innerHTML = '';
-            
+
             if (index === 0) {
                 // 玩家手牌
                 this.game.players[0].cards.forEach((card, cardIndex) => {
@@ -166,7 +166,7 @@ class UIController {
     bindEvents() {
         // 只绑定开始游戏按钮和游戏操作事件
         this.startButton.addEventListener('click', () => this.handleStartGame());
-        
+
         // 绑定游戏操作事件
         document.getElementById('play-btn').addEventListener('click', () => this.handlePlay());
         document.getElementById('challenge-btn').addEventListener('click', () => this.handleChallenge());
@@ -182,13 +182,13 @@ class UIController {
             // 创建玩家和AI
             this.gameHandler.handlePlayerJoin(playerName);
             this.gameHandler.handlePlayerJoin('AI对手');
-            
+
             // 初始化新一游戏
             if (this.gameHandler.handleGameStart()) {
                 // 隐藏大厅，显示游戏界面
                 this.lobbyScreen.style.display = 'none';
                 this.gameScreen.style.display = 'block';
-                
+
                 // 更新游戏视图
                 this.updateGameView();
                 // 如果是玩家回合，开始计时
@@ -201,7 +201,7 @@ class UIController {
 
     updatePlayerHand(player) {
         if (!player || !player.cards) return;
-        
+
         const handElement = document.querySelector('#player1 .hand');
         if (!handElement) return;
 
@@ -225,7 +225,7 @@ class UIController {
             this.selectedCards.push(index);
             cardElement.classList.add('selected');
         }
-        
+
         // 更新出牌按钮状态
         const playButton = document.getElementById('play-btn');
         playButton.disabled = this.selectedCards.length === 0 || this.game.currentPlayer !== 0;
@@ -234,30 +234,30 @@ class UIController {
     handleAITurn() {
         // 确保是AI的回合
         if (this.game.currentPlayer !== 1) return;
-        
+
         // 清除之前的计时器
         this.clearTurnTimer();
-        
+
         setTimeout(() => {
             const ai = this.game.players[1];
             const targetCard = this.game.targetCard;
-            
+
             // 统计手牌中目标牌的数量
-            const targetCardCount = ai.cards.filter(card => 
+            const targetCardCount = ai.cards.filter(card =>
                 card.type === targetCard || card.type === 'J'
             ).length;
-            
+
             // 决定是否说谎
             const shouldLie = Math.random() < 0.5;
             let cardCount;
             let cardIndices;
-            
+
             if (shouldLie) {
                 // 说谎策略：出非目标牌
                 const nonTargetCards = ai.cards
                     .map((card, index) => ({card, index}))
                     .filter(({card}) => card.type !== targetCard && card.type !== 'J');
-                    
+
                 if (nonTargetCards.length > 0) {
                     cardCount = Math.min(3, nonTargetCards.length);
                     cardIndices = nonTargetCards
@@ -281,7 +281,7 @@ class UIController {
                     .slice(0, cardCount)
                     .map(({index}) => index);
             }
-            
+
             // AI出牌
             if (this.gameHandler.handlePlayCards(1, cardIndices, targetCard, cardCount)) {
                 console.log('AI played:', cardCount, 'cards, lying:', shouldLie);
@@ -292,13 +292,13 @@ class UIController {
                     cardCount
                 );
                 this.updateGameView();
-                
+
                 // 确保质疑按钮可用
                 const challengeButton = document.getElementById('challenge-btn');
                 if (challengeButton) {
                     challengeButton.disabled = false;
                 }
-                
+
                 // 启动玩家的计时器
                 if (this.game.currentPlayer === 0) {
                     this.startTurnTimer();
@@ -312,7 +312,7 @@ class UIController {
         const gameState = this.game.getGameState();
         const playButton = document.getElementById('play-btn');
         const challengeButton = document.getElementById('challenge-btn');
-        
+
         // 如果是当前玩家的回合
         if (gameState.currentPlayer === 0) {
             // 只有选择了牌才能出牌
@@ -323,14 +323,14 @@ class UIController {
             // 如果是AI的回合
             playButton.disabled = true;
             // 只有AI刚刚出过牌才能质疑
-            challengeButton.disabled = !this.game.lastPlayedInfo || 
-                                     this.game.lastPlayedInfo.playerId !== 1 ||
-                                     !this.game.players[0].alive;
+            challengeButton.disabled = !this.game.lastPlayedInfo ||
+                this.game.lastPlayedInfo.playerId !== 1 ||
+                !this.game.players[0].alive;
         }
 
         // 如果是玩家出牌后，AI考虑是否质疑
-        if (gameState.currentPlayer === 1 && 
-            this.game.lastPlayedInfo && 
+        if (gameState.currentPlayer === 1 &&
+            this.game.lastPlayedInfo &&
             this.game.lastPlayedInfo.playerId === 0 &&
             this.game.players[1].alive) {
             setTimeout(() => {
@@ -360,7 +360,7 @@ class UIController {
                 claimedCount
             );
             this.updateGameView();
-            
+
             // 玩家出牌后，延迟一段时间再让AI行动
             setTimeout(() => {
                 if (this.game.currentPlayer === 1) {
@@ -378,7 +378,7 @@ class UIController {
             console.error('No cards to challenge');
             return;
         }
-        
+
         // 显示质疑提示
         this.showChallengeNotification(() => {
             // 显示被质疑的牌
@@ -399,7 +399,7 @@ class UIController {
         notification.className = 'game-notification challenge';
         notification.textContent = isAI ? 'AI对手质疑！' : '质疑！';
         document.body.appendChild(notification);
-        
+
         setTimeout(() => {
             notification.remove();
             callback();
@@ -410,7 +410,7 @@ class UIController {
     showChallengedCards(callback, isAI = false) {
         const playedCardsArea = document.getElementById('played-cards');
         const {cards, claimedType, claimedCount} = this.game.lastPlayedInfo;
-        
+
         // 计算实际牌数
         let realCount = 0;
         cards.forEach(card => {
@@ -418,13 +418,13 @@ class UIController {
                 realCount++;
             }
         });
-        
+
         // 更新信息显示
         const playedInfo = playedCardsArea.querySelector('.played-info');
         if (playedInfo) {
             playedInfo.textContent = `声称: ${claimedCount}张${claimedType}`;
         }
-        
+
         // 翻转所有牌
         const cardElements = playedCardsArea.querySelectorAll('.card');
         cardElements.forEach((cardElement, index) => {
@@ -440,7 +440,7 @@ class UIController {
                 }
             }, index * 300);
         });
-        
+
         // 显示实际情况
         setTimeout(() => {
             if (playedInfo) {
@@ -630,16 +630,29 @@ class UIController {
         }
     }
 
-    // 添加 AI 质疑决策方法
+    // 修改 handleAIChallenge 方法
     handleAIChallenge() {
         const lastPlay = this.game.lastPlayedInfo;
         if (!lastPlay) return;
         
-        // AI质疑策略计算...
-        let challengeProbability = 0.3;
+        // 计算AI手上持有的目标牌数量
+        const ai = this.game.players[1];
+        const targetCardCount = ai.cards.filter(card => 
+            card.type === lastPlay.claimedType || card.type === 'J'
+        ).length;
+        
+        // AI质疑策略：
+        // 1. 声称的牌数越多，越可能质疑
+        // 2. AI手上持有的目标牌越多，越可能质疑
+        let challengeProbability = 0.3; // 基础质疑概率
+        
+        // 根据声称的牌数调整概率
         challengeProbability += lastPlay.claimedCount * 0.2;
+        
+        // 根据AI手上的目标牌数调整概率
         challengeProbability += targetCardCount * 0.1;
         
+        // 决定是否质疑
         if (Math.random() < challengeProbability) {
             console.log('AI challenges!');
             // 显示AI质疑动画
@@ -658,7 +671,7 @@ class UIController {
         }
     }
 
-    // 修改显示出牌方法
+    // 修改 updatePlayedCards 方法
     updatePlayedCards(cards, claimedType, claimedCount) {
         const playedCardsArea = document.getElementById('played-cards');
         playedCardsArea.innerHTML = '';
